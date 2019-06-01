@@ -1,4 +1,5 @@
 ( num -- addr )
 : save
-  8 allot dup -rot ! ;
+  8 allot dup -rot !
+;
 
