@@ -56,13 +56,14 @@ print_uint:
 	dec rsp
 	mov [rsp], byte 0 ; null-terminator
 	mov r11, 0xA
-	mov rax, rd ; the quotient
+	mov rax, rdi ; the quotient
 	.get_num:
 		dec rsp
 		xor rdx, rdx
 		div r11
 		add rdx, 48 ; to ascii
-		mov [rsp], dltest rax, rax
+		mov [rsp], dl
+		test rax, rax
 		jnz .get_num
 	.output:
 		mov rdi, rsp
@@ -126,20 +127,21 @@ read_word:
 	test rax, rax
 	jz .end_normal
 	.read:
-	cmp r9, r8
-	ja .too_longmov byte[r10 + r9], al
-	inc r9
-	call read_char
-	; check if the end reached
-	cmp al, 0x20
-	jz .end_normal
-	cmp al, 0x10
-	jz .end_normal
-	cmp al, 0x9
-	jz .end_normal
-	test rax, rax
-	jz .end_normal
-	jmp .read
+		cmp r9, r8
+		ja .too_long
+		mov byte[r10 + r9], al
+		inc r9
+		call read_char
+		; check if the end reached
+		cmp al, 0x20
+		jz .end_normal
+		cmp al, 0x10
+		jz .end_normal
+		cmp al, 0x9
+		jz .end_normal
+		test rax, rax
+		jz .end_normal
+		jmp .read
 	.end_normal:
 	mov byte[r10 + r9], 0 ; null-terminator
 	mov rax, r10
@@ -200,7 +202,7 @@ parse_int:
 ; # rsi - pointer to the second string
 ; # rax contains 1, if strings are equal, 0 - otherwise
 string_equals:
-	xor r8, r ; pointer to the first string
+	xor r8, r8 ; pointer to the first string
 	xor r9, r9 ; pointer to the second string
 	xor eax, eax ; answer
 	.compare:
